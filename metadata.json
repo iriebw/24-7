@@ -1,0 +1,6 @@
+{
+  "name": "Discord Server Manager & Music Bot",
+  "description": "A full-stack application that runs a Discord bot with server management (anti-nuke), music playback, and utility commands like ping and avatar.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
