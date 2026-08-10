@@ -88,7 +88,7 @@ export async function startBot() {
             "🛡️ **Quản trị:** `,to @user [phút] [lý do]` (Timeout), `,ban @user [lý do]`, `,clear [số lượng]`, `,setup voice`\n" +
             "🛡️ **Anti-Nuke:** Hệ thống tự động theo dõi và khóa những kẻ spam xóa kênh/role.\n" +
             "🎵 **Nhạc:** `,play <tên bài/link>`, `,join`, `,leave`, `,skip`, `,queue`, `,stop`\n" +
-            "🛠️ **Tiện ích:** `,ping`, `,avt [@user]`, `,afk [lý do]`, `,gif [từ khóa]`"
+            "🛠️ **Tiện ích:** `,ping`, `,avt [@user]`, `,w [@user]` (Whois), `,afk [lý do]`, `,gif [từ khóa]`"
         );
       }
     } catch (error) {

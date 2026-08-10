@@ -101,6 +101,9 @@ export default function App() {
               <span className="bg-gray-50 px-3 py-1 rounded-md text-sm text-gray-700 border border-gray-200">
                 ,setup voice
               </span>
+              <span className="bg-gray-50 px-3 py-1 rounded-md text-sm text-gray-700 border border-gray-200">
+                ,w [@user]
+              </span>
             </div>
           </div>
           

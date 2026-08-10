@@ -168,5 +168,50 @@ export async function handleUtilsCommand(
     return true;
   }
 
+  if (commandName === "w" || commandName === "whois") {
+    let targetUser = message.mentions.members?.first();
+    if (!targetUser && args[0]) {
+      const targetId = args[0].replace(/[<@!>]/g, '');
+      try {
+        targetUser = await message.guild?.members.fetch(targetId);
+      } catch (e) {}
+    }
+    
+    if (!targetUser) {
+      targetUser = message.member || await message.guild?.members.fetch(message.author.id);
+    }
+
+    if (targetUser) {
+      const user = targetUser.user;
+      const joinedAt = targetUser.joinedAt ? `<t:${Math.floor(targetUser.joinedAt.getTime() / 1000)}:F> (<t:${Math.floor(targetUser.joinedAt.getTime() / 1000)}:R>)` : "Không xác định";
+      const createdAt = `<t:${Math.floor(user.createdAt.getTime() / 1000)}:F> (<t:${Math.floor(user.createdAt.getTime() / 1000)}:R>)`;
+      
+      const roles = targetUser.roles.cache
+        .filter(r => r.id !== message.guild?.id)
+        .sort((a, b) => b.position - a.position)
+        .map(r => r.toString());
+      
+      const rolesDisplay = roles.length > 0 
+        ? (roles.length > 20 ? `${roles.slice(0, 20).join(', ')} và ${roles.length - 20} role khác` : roles.join(', '))
+        : "Không có role nào";
+
+      const embed = new EmbedBuilder()
+        .setColor(targetUser.displayHexColor !== "#000000" ? targetUser.displayHexColor : "#0099ff")
+        .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
+        .setThumbnail(user.displayAvatarURL({ size: 1024 }))
+        .addFields(
+          { name: "👤 User", value: `<@${user.id}> (${user.id})`, inline: true },
+          { name: "Đã tham gia server", value: joinedAt, inline: false },
+          { name: "Đã tạo tài khoản", value: createdAt, inline: false },
+          { name: `Roles [${targetUser.roles.cache.size - 1}]`, value: rolesDisplay, inline: false }
+        )
+        .setFooter({ text: `ID: ${user.id}` })
+        .setTimestamp();
+      
+      message.reply({ embeds: [embed] });
+    }
+    return true;
+  }
+
   return false;
 }
