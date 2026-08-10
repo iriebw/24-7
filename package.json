@@ -27,7 +27,6 @@
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
     "vite": "^6.2.3",
-    "youtube-dl-exec": "^3.1.12",
     "youtube-ext": "^1.1.25",
     "yt-search": "^2.13.1"
   },
