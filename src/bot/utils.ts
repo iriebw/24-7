@@ -213,5 +213,49 @@ export async function handleUtilsCommand(
     return true;
   }
 
+  if (commandName === "nuke" || commandName === "xoakenh" || commandName === "delchannel") {
+    const isAllowed = message.author.id === "1478172978259824793" || message.member?.permissions.has("ManageChannels");
+    if (!isAllowed) {
+      message.reply("Bạn không có quyền xóa kênh!");
+      return true;
+    }
+
+    try {
+      if (!message.guild) return true;
+      
+      let targetChannel = message.mentions.channels.first();
+      
+      if (!targetChannel && args[0]) {
+        // Support channel link or ID
+        const parts = args[0].split('/');
+        const targetId = parts[parts.length - 1].replace(/[<#>]/g, '');
+        try {
+          targetChannel = await message.guild.channels.fetch(targetId) as any;
+        } catch (e) {}
+      }
+      
+      if (targetChannel) {
+        await targetChannel.delete();
+        message.reply(`✅ Đã xóa kênh **${targetChannel.name}**.`);
+      } else {
+        const channel = message.channel;
+        if ('clone' in channel) {
+           const newChannel = await (channel as any).clone();
+           if ('setPosition' in newChannel && 'position' in channel) {
+              await (newChannel as any).setPosition((channel as any).position);
+           }
+           await channel.delete();
+           await newChannel.send(`Kênh đã được tạo lại (nuked) bởi ${message.author.tag} 💥`);
+        } else {
+           await channel.delete();
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi xóa kênh:", error);
+      message.reply("Không thể xóa kênh do thiếu quyền!").catch(() => {});
+    }
+    return true;
+  }
+
   return false;
 }

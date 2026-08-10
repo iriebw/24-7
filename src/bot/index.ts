@@ -13,6 +13,7 @@ import { handleAfkCommand, checkAfkStatus } from "./afk.js";
 import { handleSocialLinks } from "./social.js";
 import { handleSetupVoiceCommand, setupVoiceEvents } from "./voice.js";
 import { setupAntiSpam } from "./antispam.js";
+import { setupSnipe } from "./snipe.js";
 
 const PREFIX = ",";
 
@@ -50,6 +51,9 @@ export async function startBot() {
 
   // Setup Anti-Spam & External Bots Blocker
   setupAntiSpam(client);
+
+  // Setup Snipe Command
+  setupSnipe(client);
 
   client.on(Events.MessageCreate, async (message: Message) => {
     // Ignore bots
@@ -89,10 +93,10 @@ export async function startBot() {
       if (commandName === "help") {
         message.reply(
           "**Danh sách lệnh:**\n" +
-            "🛡️ **Quản trị:** `,to @user [phút] [lý do]` (Timeout), `,ban @user [lý do]`, `,clear [số lượng]`, `,setup voice`\n" +
+            "🛡️ **Quản trị:** `,to @user [phút] [lý do]` (Timeout), `,ban @user [lý do]`, `,clear [số lượng]`, `,setup voice`, `,nuke` (Xóa/tạo lại kênh)\n" +
             "🛡️ **Anti-Nuke:** Hệ thống tự động theo dõi và khóa những kẻ spam xóa kênh/role.\n" +
             "🎵 **Nhạc:** `,play <tên bài/link>`, `,join`, `,leave`, `,skip`, `,queue`, `,stop`\n" +
-            "🛠️ **Tiện ích:** `,ping`, `,avt [@user]`, `,w [@user]` (Whois), `,afk [lý do]`, `,gif [từ khóa]`"
+            "🛠️ **Tiện ích:** `,ping`, `,avt [@user]`, `,w [@user]` (Whois), `,afk [lý do]`, `,gif [từ khóa]`, `/snipe` (Xem tin nhắn đã xóa)"
         );
       }
     } catch (error) {

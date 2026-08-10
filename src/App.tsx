@@ -102,7 +102,13 @@ export default function App() {
                 ,setup voice
               </span>
               <span className="bg-gray-50 px-3 py-1 rounded-md text-sm text-gray-700 border border-gray-200">
+                ,nuke
+              </span>
+              <span className="bg-gray-50 px-3 py-1 rounded-md text-sm text-gray-700 border border-gray-200">
                 ,w [@user]
+              </span>
+              <span className="bg-gray-50 px-3 py-1 rounded-md text-sm text-gray-700 border border-gray-200">
+                /snipe
               </span>
             </div>
           </div>
