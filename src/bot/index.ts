@@ -12,6 +12,7 @@ import { handleUtilsCommand } from "./utils.js";
 import { handleAfkCommand, checkAfkStatus } from "./afk.js";
 import { handleSocialLinks } from "./social.js";
 import { handleSetupVoiceCommand, setupVoiceEvents } from "./voice.js";
+import { setupAntiSpam } from "./antispam.js";
 
 const PREFIX = ",";
 
@@ -46,6 +47,9 @@ export async function startBot() {
 
   // Setup Voice Channel Events
   setupVoiceEvents(client);
+
+  // Setup Anti-Spam & External Bots Blocker
+  setupAntiSpam(client);
 
   client.on(Events.MessageCreate, async (message: Message) => {
     // Ignore bots
