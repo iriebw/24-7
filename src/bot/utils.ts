@@ -248,6 +248,11 @@ export async function handleUtilsCommand(
           targetChannel = await message.guild.channels.fetch(targetId) as any;
         } catch (e) {}
       }
+
+      if (args[0] && !targetChannel) {
+        message.reply("Không tìm thấy kênh để xóa! Kênh có thể đã bị xóa trước đó.");
+        return true;
+      }
       
       if (targetChannel) {
         await targetChannel.delete();
