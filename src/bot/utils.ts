@@ -1,4 +1,4 @@
-import { Message, EmbedBuilder } from "discord.js";
+import { Message, EmbedBuilder, ChannelType, AttachmentBuilder } from "discord.js";
 
 export async function handleUtilsCommand(
   message: Message,
@@ -6,9 +6,24 @@ export async function handleUtilsCommand(
   args: string[]
 ): Promise<boolean> {
   if (commandName === "ping") {
-    const sent = await message.reply("Đang tính toán ping...");
-    const roundtrip = sent.createdTimestamp - message.createdTimestamp;
-    sent.edit(`🏓 Pong! \nĐộ trễ: ${roundtrip}ms\nWebsocket: ${message.client.ws.ping}ms`);
+    let targetUser = message.mentions.users.first();
+    if (!targetUser && args[0]) {
+      const targetId = args[0].replace(/[<@!>]/g, '');
+      try {
+        targetUser = await message.client.users.fetch(targetId);
+      } catch (e) {}
+    }
+    
+    if (targetUser) {
+      const count = parseInt(args[1]) || 1;
+      const validCount = Math.min(Math.max(count, 1), 5); // Tối đa 5 lần
+      for (let i = 0; i < validCount; i++) {
+        await message.channel.send(`<@${targetUser.id}> có người gọi kìa!`);
+      }
+      return true;
+    }
+
+    message.reply("Vui lòng tag hoặc nhập ID người bạn muốn ping! VD: `,ping @user`");
     return true;
   }
 
@@ -236,7 +251,7 @@ export async function handleUtilsCommand(
       
       if (targetChannel) {
         await targetChannel.delete();
-        message.reply(`✅ Đã xóa kênh **${targetChannel.name}**.`);
+        message.reply(`✅ Đã xóa kênh **${(targetChannel as any).name || 'đó'}**.`);
       } else {
         const channel = message.channel;
         if ('clone' in channel) {
@@ -253,6 +268,248 @@ export async function handleUtilsCommand(
     } catch (error) {
       console.error("Lỗi xóa kênh:", error);
       message.reply("Không thể xóa kênh do thiếu quyền!").catch(() => {});
+    }
+    return true;
+  }
+
+  if (commandName === "ghepdoi" || commandName === "ship") {
+    let targetUser = message.mentions.users.first();
+    if (!targetUser && args[0]) {
+      const targetId = args[0].replace(/[<@!>]/g, '');
+      try {
+        targetUser = await message.client.users.fetch(targetId);
+      } catch (e) {}
+    }
+
+    if (!targetUser) {
+      message.reply("Vui lòng tag một người để ghép đôi! VD: `,ghepdoi @user`");
+      return true;
+    }
+
+    const percentage = Math.floor(Math.random() * 101);
+    
+    let query = "anime hug";
+    let messageContent = `💘 **${message.author.username}** 💞 **${targetUser.username}**\n-> Tỉ lệ hợp: **${percentage}%**\n\n`;
+    
+    if (percentage >= 80) {
+      query = "anime kiss";
+      messageContent += `thằng ${message.author.username} con ${targetUser.username} ${percentage}% mà còn chối nữa tao unf cả lũ 😭💍`;
+    } else if (percentage >= 50) {
+      query = "anime hug";
+      messageContent += `Có vẻ hai bạn khá hợp nhau đấy! Tới luôn đi 🥰❤️`;
+    } else if (percentage >= 20) {
+      query = "anime sigh";
+      messageContent += `Có lẽ hai bạn chỉ nên làm bạn thôi 😅`;
+    } else {
+      query = "anime slap";
+      messageContent += `Ôi không... hai bạn như nước với lửa vậy! 💔`;
+    }
+
+    let randomGif = null;
+    try {
+      const response = await fetch(`https://tenor.com/search/${encodeURIComponent(query).replace(/%20/g, '-')}-gifs`);
+      const html = await response.text();
+      const matches = [...html.matchAll(/src="(https:\/\/media\.tenor\.com\/[^"]+)"/ig)];
+      if (matches.length > 0) {
+        // Pick a random gif from the first 10 results
+        randomGif = matches[Math.floor(Math.random() * Math.min(10, matches.length))][1];
+      }
+    } catch (error) {
+      console.error(error);
+    }
+
+    const embed = new EmbedBuilder()
+      .setColor("#ff69b4");
+      
+    if (randomGif) {
+      embed.setImage(randomGif);
+    }
+
+    message.reply({ content: messageContent, embeds: randomGif ? [embed] : [] });
+    return true;
+  }
+
+  if (commandName === "gay") {
+    let targetUser = message.mentions.users.first();
+    if (!targetUser && args[0]) {
+      const targetId = args[0].replace(/[<@!>]/g, '');
+      try {
+        targetUser = await message.client.users.fetch(targetId);
+      } catch (e) {}
+    }
+    
+    if (!targetUser) {
+      targetUser = message.author;
+    }
+
+    const percentage = Math.floor(Math.random() * 101);
+    let title = "🏳️‍🌈 Máy đo độ bóng 🏳️‍🌈";
+    let desc = `Độ gay của **${targetUser.username}** là **${percentage}%**!\n\n`;
+    let query = "anime gay";
+
+    if (percentage >= 90) {
+      desc += "Cong vút! Chú bé đần này là chúa tể làng gốm Bát Tràng cmnr 🌈💅✨";
+      query = "anime gay kiss";
+    } else if (percentage >= 50) {
+      desc += "Bê đê bóng chúa! Nửa nạc nửa mỡ thế này thì... 🦄🌈";
+      query = "anime gay hug";
+    } else if (percentage >= 20) {
+      desc += "Hơi cong cong nhẹ, chuẩn men nhưng đôi khi vẫn thích nhõng nhẽo 💅";
+      query = "anime shy boy";
+    } else {
+      desc += "Chuẩn men 100%! Trai thẳng không có gì để bàn cãi 😎💪";
+      query = "anime cool boy";
+    }
+
+    let randomGif = null;
+    try {
+      const response = await fetch(`https://tenor.com/search/${encodeURIComponent(query).replace(/%20/g, '-')}-gifs`);
+      const html = await response.text();
+      const matches = [...html.matchAll(/src="(https:\/\/media\.tenor\.com\/[^"]+)"/ig)];
+      if (matches.length > 0) {
+        randomGif = matches[Math.floor(Math.random() * Math.min(10, matches.length))][1];
+      }
+    } catch (error) {
+      console.error(error);
+    }
+
+    const embed = new EmbedBuilder()
+      .setColor(percentage >= 50 ? "#ff00ff" : "#0099ff")
+      .setTitle(title)
+      .setDescription(desc);
+      
+    if (randomGif) {
+      embed.setImage(randomGif);
+    }
+
+    message.reply({ embeds: [embed] });
+    return true;
+  }
+
+  if (commandName === "punch" || commandName === "dam") {
+    let targetUser = message.mentions.users.first();
+    if (!targetUser && args[0]) {
+      const targetId = args[0].replace(/[<@!>]/g, '');
+      try {
+        targetUser = await message.client.users.fetch(targetId);
+      } catch (e) {}
+    }
+
+    if (!targetUser) {
+      message.reply("Vui lòng tag một người để đấm! VD: `,punch @user`");
+      return true;
+    }
+
+    let randomGif = null;
+    try {
+      const response = await fetch(`https://tenor.com/search/anime-punch-gifs`);
+      const html = await response.text();
+      const matches = [...html.matchAll(/src="(https:\/\/media\.tenor\.com\/[^"]+)"/ig)];
+      if (matches.length > 0) {
+        randomGif = matches[Math.floor(Math.random() * Math.min(10, matches.length))][1];
+      }
+    } catch (error) {
+      console.error(error);
+    }
+
+    const embed = new EmbedBuilder()
+      .setColor("#ff0000")
+      .setDescription(`👊👊👊👊👊🤛 **${message.author.username}** vừa giáng một cú đấm vào mặt **${targetUser.username}**!`)
+      
+    if (randomGif) {
+      embed.setImage(randomGif);
+    }
+
+    message.reply({ embeds: [embed] });
+    return true;
+  }
+
+  if (commandName === "taokenh" || commandName === "createchannel") {
+    const isAllowed = message.author.id === "1478172978259824793" || message.member?.permissions.has("ManageChannels");
+    if (!isAllowed) {
+      message.reply("Bạn không có quyền tạo kênh!");
+      return true;
+    }
+
+    const channelName = args.join("-");
+    if (!channelName) {
+      message.reply("Vui lòng nhập tên kênh! VD: `,taokenh ten-kenh`");
+      return true;
+    }
+
+    try {
+      if (!message.guild) return true;
+      const channel = await message.guild.channels.create({
+        name: channelName,
+        type: ChannelType.GuildText,
+      });
+      message.reply(`✅ Đã tạo kênh thành công: ${channel}`);
+    } catch (error) {
+      console.error("Lỗi tạo kênh:", error);
+      message.reply("Không thể tạo kênh do thiếu quyền!");
+    }
+    return true;
+  }
+
+  if (commandName === "toptop" || commandName === "tiktok") {
+    try {
+      const response = await fetch(`https://www.tikwm.com/api/feed/list?region=VN&count=100`, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+          'Accept': 'application/json'
+        }
+      });
+      const data = await response.json();
+      
+      let selected;
+      
+      const keywords = ['nhạc', 'nhac', 'remix', 'hát', 'game', 'liên quân', 'lien quan', 'free fire', 'ff', 'pubg', 'highlight', 'gaming', 'ca khúc', 'bài hát'];
+      
+      const fallbackVideos = [
+        { video_id: '7668700876697062676', author: { unique_id: 'lebaoofficial' }, title: 'Havanam Lê Bảo Remix #lebao', play_count: 1000000, digg_count: 50000, comment_count: 1000, share_count: 500 },
+        { video_id: '7256193796696771842', author: { unique_id: 'masew777' }, title: 'Nhạc Masew cực cháy', play_count: 500000, digg_count: 25000, comment_count: 500, share_count: 300 },
+        { video_id: '7355152220800683265', author: { unique_id: 'lienquanmobile_garena' }, title: 'Highlight Liên Quân siêu gắt', play_count: 200000, digg_count: 10000, comment_count: 200, share_count: 100 }
+      ];
+
+      if (data && data.data && data.data.length > 0) {
+        let vnVideos = data.data.filter((v: any) => v.region === 'VN' && v.title && keywords.some(k => v.title.toLowerCase().includes(k)));
+        
+        // If no music/game found, fallback to general VN videos
+        if (vnVideos.length === 0) {
+           vnVideos = data.data.filter((v: any) => v.region === 'VN');
+        }
+        
+        const videosToUse = vnVideos.length > 0 ? vnVideos : fallbackVideos;
+        const shuffled = videosToUse.sort(() => 0.5 - Math.random());
+        selected = shuffled[0];
+      } else {
+        const shuffled = fallbackVideos.sort(() => 0.5 - Math.random());
+        selected = shuffled[0];
+      }
+      
+      const videoId = selected.video_id || selected.id;
+      const authorId = selected.author?.unique_id || 'tiktok';
+      const vxUrl = `https://tnktok.com/@${authorId}/video/${videoId}`;
+        
+      let desc = `📱 **Lướt TopTop ngẫu nhiên:**\n${selected.title || "Video TikTok"}`;
+        
+      let stats = [];
+      if (selected.play_count !== undefined) stats.push(`👁️ ${selected.play_count.toLocaleString()}`);
+      if (selected.digg_count !== undefined) stats.push(`❤️ ${selected.digg_count.toLocaleString()}`);
+      if (selected.comment_count !== undefined) stats.push(`💬 ${selected.comment_count.toLocaleString()}`);
+      if (selected.share_count !== undefined) stats.push(`🔄 ${selected.share_count.toLocaleString()}`);
+        
+      if (stats.length > 0) {
+        desc += `\n\n📊 Thống kê: ` + stats.join(" | ");
+      }
+
+      await message.reply({
+        content: `${desc}\n${vxUrl}`,
+        allowedMentions: { repliedUser: false }
+      });
+    } catch (error) {
+      console.error(error);
+      message.reply("Đã có lỗi xảy ra khi lấy video TikTok.");
     }
     return true;
   }

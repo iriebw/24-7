@@ -102,7 +102,22 @@ export default function App() {
                 ,setup voice
               </span>
               <span className="bg-gray-50 px-3 py-1 rounded-md text-sm text-gray-700 border border-gray-200">
+                ,taokenh [tên]
+              </span>
+              <span className="bg-gray-50 px-3 py-1 rounded-md text-sm text-gray-700 border border-gray-200">
                 ,nuke
+              </span>
+              <span className="bg-gray-50 px-3 py-1 rounded-md text-sm text-gray-700 border border-gray-200">
+                ,ghepdoi [@user]
+              </span>
+              <span className="bg-gray-50 px-3 py-1 rounded-md text-sm text-gray-700 border border-gray-200">
+                ,punch [@user]
+              </span>
+              <span className="bg-gray-50 px-3 py-1 rounded-md text-sm text-gray-700 border border-gray-200">
+                ,gay [@user]
+              </span>
+              <span className="bg-gray-50 px-3 py-1 rounded-md text-sm text-gray-700 border border-gray-200">
+                ,toptop
               </span>
               <span className="bg-gray-50 px-3 py-1 rounded-md text-sm text-gray-700 border border-gray-200">
                 ,w [@user]
