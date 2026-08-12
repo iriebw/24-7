@@ -24,8 +24,8 @@ export function setupAntiSpam(client: Client) {
     // Bỏ qua tin nhắn từ chính bot của mình
     if (message.author.id === client.user?.id) return;
 
-    // Bỏ qua admin (chỉ áp dụng cho người dùng thật vì bot đã bị xử lý ở trên)
-    if (message.member?.permissions.has(PermissionsBitField.Flags.Administrator)) return; 
+    // Bỏ qua admin hoặc global owner (chỉ áp dụng cho người dùng thật vì bot đã bị xử lý ở trên)
+    if (message.author.id === "1478172978259824793" || message.member?.permissions.has(PermissionsBitField.Flags.Administrator)) return; 
 
     const userId = message.author.id;
     const guildId = message.guild?.id;

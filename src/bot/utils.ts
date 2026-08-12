@@ -466,7 +466,7 @@ export async function handleUtilsCommand(
       });
       const data = await response.json();
       
-      let selected;
+      let selectedVideos: any[] = [];
       
       const keywords = ['nhạc', 'nhac', 'remix', 'hát', 'game', 'liên quân', 'lien quan', 'free fire', 'ff', 'pubg', 'highlight', 'gaming', 'ca khúc', 'bài hát'];
       
@@ -486,32 +486,34 @@ export async function handleUtilsCommand(
         
         const videosToUse = vnVideos.length > 0 ? vnVideos : fallbackVideos;
         const shuffled = videosToUse.sort(() => 0.5 - Math.random());
-        selected = shuffled[0];
+        selectedVideos = shuffled.slice(0, 3);
       } else {
         const shuffled = fallbackVideos.sort(() => 0.5 - Math.random());
-        selected = shuffled[0];
+        selectedVideos = shuffled.slice(0, 3);
       }
       
-      const videoId = selected.video_id || selected.id;
-      const authorId = selected.author?.unique_id || 'tiktok';
-      const vxUrl = `https://tnktok.com/@${authorId}/video/${videoId}`;
-        
-      let desc = `📱 **Lướt TopTop ngẫu nhiên:**\n${selected.title || "Video TikTok"}`;
-        
-      let stats = [];
-      if (selected.play_count !== undefined) stats.push(`👁️ ${selected.play_count.toLocaleString()}`);
-      if (selected.digg_count !== undefined) stats.push(`❤️ ${selected.digg_count.toLocaleString()}`);
-      if (selected.comment_count !== undefined) stats.push(`💬 ${selected.comment_count.toLocaleString()}`);
-      if (selected.share_count !== undefined) stats.push(`🔄 ${selected.share_count.toLocaleString()}`);
-        
-      if (stats.length > 0) {
-        desc += `\n\n📊 Thống kê: ` + stats.join(" | ");
-      }
+      for (const selected of selectedVideos) {
+        const videoId = selected.video_id || selected.id;
+        const authorId = selected.author?.unique_id || 'tiktok';
+        const vxUrl = `https://tnktok.com/@${authorId}/video/${videoId}`;
+          
+        let desc = `📱 **Lướt TopTop ngẫu nhiên:**\n${selected.title || "Video TikTok"}`;
+          
+        let stats = [];
+        if (selected.play_count !== undefined) stats.push(`👁️ ${selected.play_count.toLocaleString()}`);
+        if (selected.digg_count !== undefined) stats.push(`❤️ ${selected.digg_count.toLocaleString()}`);
+        if (selected.comment_count !== undefined) stats.push(`💬 ${selected.comment_count.toLocaleString()}`);
+        if (selected.share_count !== undefined) stats.push(`🔄 ${selected.share_count.toLocaleString()}`);
+          
+        if (stats.length > 0) {
+          desc += `\n\n📊 Thống kê: ` + stats.join(" | ");
+        }
 
-      await message.reply({
-        content: `${desc}\n${vxUrl}`,
-        allowedMentions: { repliedUser: false }
-      });
+        await message.reply({
+          content: `${desc}\n${vxUrl}`,
+          allowedMentions: { repliedUser: false }
+        });
+      }
     } catch (error) {
       console.error(error);
       message.reply("Đã có lỗi xảy ra khi lấy video TikTok.");

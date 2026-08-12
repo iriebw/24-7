@@ -2,18 +2,25 @@ import "dotenv/config";
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import { startBot } from "./src/bot/index.js";
+import { startBot, stopBot, getBotStatus } from "./src/bot/index.js";
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Start the Discord Bot asynchronously
-  startBot().catch(console.error);
-
   // API route to check bot status
   app.get("/api/status", (req, res) => {
-    res.json({ status: "Bot and Server are running!" });
+    res.json({ isRunning: getBotStatus(), status: getBotStatus() ? "Bot and Server are running!" : "Server is running, but Bot is stopped." });
+  });
+
+  app.post("/api/start", async (req, res) => {
+    const success = await startBot();
+    res.json({ success, isRunning: getBotStatus() });
+  });
+
+  app.post("/api/stop", async (req, res) => {
+    const success = await stopBot();
+    res.json({ success, isRunning: getBotStatus() });
   });
 
   // Vite middleware for development

@@ -4,17 +4,65 @@
  */
 
 import { useEffect, useState } from "react";
-import { Server, Activity, Shield, Music, User } from "lucide-react";
+import { Server, Activity, Shield, Music, User, Power, PlaySquare } from "lucide-react";
 
 export default function App() {
   const [status, setStatus] = useState<string>("Checking...");
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useEffect(() => {
+  const checkStatus = () => {
     fetch("/api/status")
       .then((res) => res.json())
-      .then((data) => setStatus(data.status))
-      .catch(() => setStatus("Offline"));
+      .then((data) => {
+        setStatus(data.status);
+        setIsRunning(data.isRunning);
+      })
+      .catch(() => {
+        setStatus("Offline");
+        setIsRunning(false);
+      });
+  };
+
+  useEffect(() => {
+    checkStatus();
   }, []);
+
+  const handleStartBot = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/start", { method: "POST" });
+      const data = await res.json();
+      setIsRunning(data.isRunning);
+      if (data.success) {
+        setStatus("Bot and Server are running!");
+      } else {
+        alert("Failed to start bot. Please check your DISCORD_TOKEN.");
+      }
+    } catch (e) {
+      alert("Failed to start bot.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleStopBot = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/stop", { method: "POST" });
+      const data = await res.json();
+      setIsRunning(data.isRunning);
+      if (data.success) {
+        setStatus("Server is running, but Bot is stopped.");
+      } else {
+        alert("Failed to stop bot.");
+      }
+    } catch (e) {
+      alert("Failed to stop bot.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 p-8 font-sans">
@@ -31,17 +79,33 @@ export default function App() {
 
         <section className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Activity className={status.includes("running") ? "text-green-500" : "text-red-500"} />
+            <Activity className={isRunning ? "text-green-500" : "text-red-500"} />
             <div>
               <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">System Status</p>
               <p className="text-lg font-semibold">{status}</p>
             </div>
           </div>
-          {status.includes("running") && (
-            <div className="px-4 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-              Online
-            </div>
-          )}
+          <div className="flex gap-3">
+            {!isRunning ? (
+              <button
+                onClick={handleStartBot}
+                disabled={isLoading}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+              >
+                <PlaySquare size={18} />
+                Start Bot
+              </button>
+            ) : (
+              <button
+                onClick={handleStopBot}
+                disabled={isLoading}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+              >
+                <Power size={18} />
+                Stop Bot
+              </button>
+            )}
+          </div>
         </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
