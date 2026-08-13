@@ -15,6 +15,7 @@ import { handleSetupVoiceCommand, setupVoiceEvents } from "./voice.js";
 import { setupAntiSpam } from "./antispam.js";
 import { setupSnipe } from "./snipe.js";
 import { setupChatCommand } from "./chat.js";
+import { handleCryptoAddresses } from "./crypto.js";
 
 const PREFIX = ",";
 
@@ -61,6 +62,9 @@ client.on(Events.MessageCreate, async (message: Message) => {
 
   // Auto detect TikTok and YouTube links
   await handleSocialLinks(message);
+
+  // Auto detect Crypto Addresses
+  await handleCryptoAddresses(message);
 
   // Ignore messages without prefix
   if (!message.content.startsWith(PREFIX)) return;

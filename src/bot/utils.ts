@@ -522,8 +522,12 @@ export async function handleUtilsCommand(
   }
 
   if (commandName === "ltc" || commandName === "balance") {
-    const defaultAddress = "ltc1qunhdxhy2kc730qvuwdgzxka0j7qmxr6umtgycq";
-    const address = args[0] || defaultAddress;
+    const address = args[0];
+
+    if (!address) {
+      message.reply("❌ Vui lòng cung cấp địa chỉ ví LTC!\nVí dụ: `,ltc ltc1qunhdxhy2kc730qvuwdgzxka0j7qmxr6umtgycq`\n*(Bạn cũng có thể dán thẳng địa chỉ ví vào chat để bot tự động nhận diện)*");
+      return true;
+    }
 
     try {
       const balanceRes = await fetch(`https://api.blockcypher.com/v1/ltc/main/addrs/${address}/balance`);
