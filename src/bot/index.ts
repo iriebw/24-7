@@ -93,7 +93,7 @@ client.on(Events.MessageCreate, async (message: Message) => {
           "🛡️ **Quản trị:** `,to @user [phút] [lý do]` (Timeout), `,ban @user [lý do]`, `,clear [số lượng]`, `,setup voice`, `,nuke` (Xóa/tạo lại kênh), `,taokenh [tên]`\n" +
           "🛡️ **Anti-Nuke:** Hệ thống tự động theo dõi và khóa những kẻ spam xóa kênh/role.\n" +
           "🎵 **Nhạc:** `,play <tên bài/link>`, `,join`, `,leave`, `,skip`, `,queue`, `,stop`\n" +
-          "🛠️ **Tiện ích:** `,ping`, `,avt [@user]`, `,w [@user]` (Whois), `,afk [lý do]`, `,gif [từ khóa]`, `/snipe`, `,ghepdoi [@user]`, `,punch [@user]`, `,gay [@user]`, `,toptop`"
+          "🛠️ **Tiện ích:** `,ping`, `,avt [@user]`, `,w [@user]` (Whois), `,afk [lý do]`, `,gif [từ khóa]`, `/snipe`, `,ghepdoi [@user]`, `,punch [@user]`, `,gay [@user]`, `,toptop`, `,ltc [ví]`"
       );
     }
   } catch (error) {
