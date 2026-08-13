@@ -60,49 +60,47 @@ client.on(Events.MessageCreate, async (message: Message) => {
   // Check AFK status (removes AFK if user speaks, replies if mentioned users are AFK)
   await checkAfkStatus(message);
 
-  // Auto detect TikTok and YouTube links
-  await handleSocialLinks(message);
+  // If the message is a command, skip auto-detectors so they don't double trigger
+  if (message.content.startsWith(PREFIX)) {
+    const args = message.content.slice(PREFIX.length).trim().split(/ +/);
+    const commandName = args.shift()?.toLowerCase();
 
-  // Auto detect Crypto Addresses
-  await handleCryptoAddresses(message);
+    if (!commandName) return;
 
-  // Ignore messages without prefix
-  if (!message.content.startsWith(PREFIX)) return;
+    try {
+      // Handle music commands (play, skip, queue, join, stop)
+      const isMusic = await handleMusicCommand(message, commandName, args);
+      if (isMusic) return;
 
-  const args = message.content.slice(PREFIX.length).trim().split(/ +/);
-  const commandName = args.shift()?.toLowerCase();
+      // Handle utility commands (ping, avt)
+      const isUtils = await handleUtilsCommand(message, commandName, args);
+      if (isUtils) return;
 
-  if (!commandName) return;
+      // Handle voice setup command
+      const isSetupVoice = await handleSetupVoiceCommand(message, commandName);
+      if (isSetupVoice) return;
 
-  try {
-    // Handle music commands (play, skip, queue, join, stop)
-    const isMusic = await handleMusicCommand(message, commandName, args);
-    if (isMusic) return;
+      // Handle AFK command
+      const isAfk = await handleAfkCommand(message, commandName, args);
+      if (isAfk) return;
 
-    // Handle utility commands (ping, avt)
-    const isUtils = await handleUtilsCommand(message, commandName, args);
-    if (isUtils) return;
-
-    // Handle voice setup command
-    const isSetupVoice = await handleSetupVoiceCommand(message, commandName);
-    if (isSetupVoice) return;
-
-    // Handle AFK command
-    const isAfk = await handleAfkCommand(message, commandName, args);
-    if (isAfk) return;
-
-    if (commandName === "help") {
-      message.reply(
-        "**Danh sách lệnh:**\n" +
-          "🛡️ **Quản trị:** `,to @user [phút] [lý do]` (Timeout), `,ban @user [lý do]`, `,clear [số lượng]`, `,setup voice`, `,nuke` (Xóa/tạo lại kênh), `,taokenh [tên]`\n" +
-          "🛡️ **Anti-Nuke:** Hệ thống tự động theo dõi và khóa những kẻ spam xóa kênh/role.\n" +
-          "🎵 **Nhạc:** `,play <tên bài/link>`, `,join`, `,leave`, `,skip`, `,queue`, `,stop`\n" +
-          "🛠️ **Tiện ích:** `,ping`, `,avt [@user]`, `,w [@user]` (Whois), `,afk [lý do]`, `,gif [từ khóa]`, `/snipe`, `,ghepdoi [@user]`, `,punch [@user]`, `,gay [@user]`, `,toptop`, `,ltc [ví]`"
-      );
+      if (commandName === "help") {
+        message.reply(
+          "**Danh sách lệnh:**\n" +
+            "🛡️ **Quản trị:** `,to @user [phút] [lý do]` (Timeout), `,ban @user [lý do]`, `,clear [số lượng]`, `,setup voice`, `,nuke` (Xóa/tạo lại kênh), `,taokenh [tên]`\n" +
+            "🛡️ **Anti-Nuke:** Hệ thống tự động theo dõi và khóa những kẻ spam xóa kênh/role.\n" +
+            "🎵 **Nhạc:** `,play <tên bài/link>`, `,join`, `,leave`, `,skip`, `,queue`, `,stop`\n" +
+            "🛠️ **Tiện ích:** `,ping`, `,avt [@user]`, `,w [@user]` (Whois), `,afk [lý do]`, `,gif [từ khóa]`, `/snipe`, `,ghepdoi [@user]`, `,punch [@user]`, `,gay [@user]`, `,toptop`, `,ltc [ví]`"
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      message.reply("Đã có lỗi xảy ra khi thực hiện lệnh!");
     }
-  } catch (error) {
-    console.error(error);
-    message.reply("Đã có lỗi xảy ra khi thực hiện lệnh!");
+  } else {
+    // Not a command, so run auto-detectors
+    await handleSocialLinks(message);
+    await handleCryptoAddresses(message);
   }
 });
 
